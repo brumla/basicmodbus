@@ -29,31 +29,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 #include <QDebug>
 
-///
-/// \brief CRC calculation
-/// \details ** warning ** this code was copied from the manual referenced below and is not part of the sources, the licence is unknown here!!!
-///
-/// \ref http://www.delta.com.tw/product/em/drive/ac_motor/download/manual/DELTA_IA-MDS_VFD-EL_UM_EN_20140522.pdf
-/// \param data data as array
-/// \param length of the array
-/// \return ModBus CRC
-///
-unsigned int crc_chk(unsigned char* data, unsigned char length){
-    int j;
-    unsigned int reg_crc=0xFFFF;
-    while(length--){
-        reg_crc ^= *data++;
-        for(j=0;j<8;j++){
-            if(reg_crc & 0x01){ /* LSB(b0)=1 */
-                reg_crc=(reg_crc>>1) ^ 0xA001;
-            }else{
-                reg_crc=reg_crc >>1;
-            }
-        }
-    }
-    return reg_crc;
-}
-// end of code with different licence
+#include "modbus_utils.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -91,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
             buff.append(QString::number(it, 16).toUpper()).rightJustified(2, '0');
             buff.append(" ");
         }
-        info(tr("Data: %1").arg(buff));
+        info(tr("Data send to MODBUS: %1").arg(buff));
 
         sendDataToPort(data);
     });
@@ -321,9 +297,16 @@ void MainWindow::on_serialPortReadyRead()
     readBuffer.append(port.readAll());
     ui->teOutput->clear();
 
+    QString num;
+    QString buff;
     for(unsigned char it : readBuffer) {
-        ui->teOutput->appendPlainText(QString::number(it, 16).toUpper().rightJustified(2, '0'));
+        num = QString::number(it, 16).toUpper().rightJustified(2, '0');
+        ui->teOutput->appendPlainText(num);
+        buff.append(num);
+        buff.append(" ");
     }
+
+    info(tr("Data received from MODBUS: %1").arg(buff));
 }
 
 void MainWindow::on_serialPortError(QSerialPort::SerialPortError err)
