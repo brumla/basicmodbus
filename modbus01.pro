@@ -42,9 +42,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp \
+        modbus_utils.cpp \
         mainwindow.cpp
 
-HEADERS += mainwindow.h
+HEADERS += modbus_utils.h mainwindow.h
 
 FORMS += mainwindow.ui
 
