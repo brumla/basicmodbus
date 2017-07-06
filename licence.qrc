@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/lic">
+        <file alias="lgpl3">lgpl3.txt</file>
+    </qresource>
+</RCC>
