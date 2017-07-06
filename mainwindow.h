@@ -37,19 +37,51 @@ public:
     ~MainWindow();
 
 private slots:
+    ///
+    /// \brief receives data when the data are ready in port buffer
+    ///
     void on_serialPortReadyRead();
+
+    ///
+    /// \brief executed when any communication error is raised
+    /// \param err
+    ///
     void on_serialPortError(QSerialPort::SerialPortError err);
+
+    ///
+    /// \brief close the application
+    ///
     void on_action_Quit_triggered();
+
+    ///
+    /// \brief shows the About screen
+    ///
     void on_action_about_triggered();
 
 private:
     Ui::MainWindow *ui;
 
+    // serial port instance
     QSerialPort port;
+
+    // buffer for incoming data
     QByteArray readBuffer;
 
+    ///
+    /// \brief Initialize list of ports and all the parameters in comboboxes
+    ///
     void initializePort();
+
+    ///
+    /// \brief validates input
+    /// \return true if the input is valid otherwise false
+    ///
     bool validator();
+
+    ///
+    /// \brief add new informative message into the log
+    /// \param msg message
+    ///
     void info(const QString& msg);
 };
 

@@ -31,6 +31,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 ///
 /// \brief CRC calculation
+/// \details ** warning ** this code was copied from the manual referenced below and is not part of the sources, the licence is unknown here!!!
+///
+/// \ref http://www.delta.com.tw/product/em/drive/ac_motor/download/manual/DELTA_IA-MDS_VFD-EL_UM_EN_20140522.pdf
 /// \param data data as array
 /// \param length of the array
 /// \return ModBus CRC
@@ -50,6 +53,7 @@ unsigned int crc_chk(unsigned char* data, unsigned char length){
     }
     return reg_crc;
 }
+// end of code with different licence
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
