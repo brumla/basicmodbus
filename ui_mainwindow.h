@@ -331,7 +331,7 @@ public:
         action_Quit->setShortcut(QApplication::translate("MainWindow", "Ctrl+Q", Q_NULLPTR));
 #endif // QT_NO_SHORTCUT
         action_about->setText(QApplication::translate("MainWindow", "&About", Q_NULLPTR));
-        groupBox->setTitle(QApplication::translate("MainWindow", "Inpu data (HEX)", Q_NULLPTR));
+        groupBox->setTitle(QApplication::translate("MainWindow", "Input data (HEX)", Q_NULLPTR));
         label_3->setText(QApplication::translate("MainWindow", "Function:", Q_NULLPTR));
         label_5->setText(QApplication::translate("MainWindow", "Data separated by new line:", Q_NULLPTR));
         leAddress1->setInputMask(QString());
@@ -358,7 +358,7 @@ public:
         );
         label->setText(QApplication::translate("MainWindow", "Port:", Q_NULLPTR));
         label_9->setText(QApplication::translate("MainWindow", "Data bits:", Q_NULLPTR));
-        label_10->setText(QApplication::translate("MainWindow", "Pairity", Q_NULLPTR));
+        label_10->setText(QApplication::translate("MainWindow", "Parity:", Q_NULLPTR));
         label_11->setText(QApplication::translate("MainWindow", "Stop bit:", Q_NULLPTR));
         label_8->setText(QApplication::translate("MainWindow", "Speed:", Q_NULLPTR));
         teLog->setPlainText(QString());

@@ -83,6 +83,19 @@ private:
     /// \param msg message
     ///
     void info(const QString& msg);
+
+    ///
+    /// \brief prepare data which will be send to the selected port
+    /// \param ok
+    /// \return
+    ///
+    QByteArray prepareData(bool *isOk);
+
+    ///
+    /// \brief send the data to the port
+    /// \param data
+    ///
+    void sendDataToPort(const QByteArray& data);
 };
 
 #endif // MAINWINDOW_H

@@ -78,54 +78,14 @@ MainWindow::MainWindow(QWidget *parent) :
         info("Sending data...");
         qDebug() << "Action triggered";
         bool ok;
-        bool dataAreValid = true;
 
         if(!validator()) return;
         info("RTU MODE");
 
-        // output port data
-        QByteArray data;
+        QByteArray data = prepareData(&ok);
+        if(!ok) return;
 
-        // add data entered as hexa numbers
-        data.append(ui->leAddress1->text().toInt(&ok, 16)); dataAreValid &= ok;
-        data.append(ui->leFunction->text().toInt(&ok, 16)); dataAreValid &= ok;
-
-        // address is 1 WORD, needs to be stored byte per byte
-        int startAddr = ui->leStartAddress->text().toInt(&ok, 16); dataAreValid &= ok;
-        data.append(startAddr >> 8);
-        data.append(startAddr & 0xFF);
-
-        // data bytes are entered as hexa values, one value per line
-        QStringList dataText = ui->teData->toPlainText().split("\n");
-        qDebug() << dataText;
-
-        for(const QString& it : dataText) {
-            data.append(it.toInt(&ok, 16)); dataAreValid &= ok;
-        }
-
-        // validate data
-        if(!ok) {
-            QMessageBox::critical(this,
-                                  tr("Data error"),
-                                  tr("At least one field contains invalid data, please correct the values"),
-                                  QMessageBox::Close);
-            statusBar()->showMessage(tr("Input data are not valid"));
-            return;
-        }
-
-        // calculate CRC
-        unsigned int crc = crc_chk((unsigned char*) data.data(), data.count());
-        info(tr("CRC: %1").arg(QString::number(crc, 16).rightJustified(4, '0')));
-
-        // add CRC, LOW byte goes first
-        data.append(crc & 0xFF);
-        data.append(crc >> 8);
-
-        // only output to UI
-        QString crcText = QString::number(crc, 16).rightJustified(4, '0');
-        ui->leCRC->setText(crcText);
-
-        // show the data in log
+        // show the data in log as list of hexadecimal numbers incl. trailing zeroes
         QString buff;
         for(unsigned char it: data) {
             buff.append(QString::number(it, 16).toUpper()).rightJustified(2, '0');
@@ -133,47 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
         }
         info(tr("Data: %1").arg(buff));
 
-        // if the port is still open, close it first
-        if(port.isOpen()) port.close();
-
-        // if the port was closed, then send data
-        if(!port.isOpen()) {
-            // do the port setup according to user setup
-            port.setPort(QSerialPortInfo(ui->cbPort->currentData().toString()));
-            port.setBaudRate(ui->cbPortSpeed->currentData().toInt());
-            port.setParity((QSerialPort::Parity) ui->cbParity->currentData().toInt());
-            port.setStopBits((QSerialPort::StopBits) ui->cbStopBit->currentData().toInt());
-            port.setDataBits((QSerialPort::DataBits) ui->cbDataBit->currentData().toInt());
-
-            // show the settings in the log
-            info(tr("Port: %1: %2,%3,%4,%5")
-                 .arg(port.portName())
-                 .arg(port.baudRate())
-                 .arg(port.dataBits())
-                 .arg(port.parity())
-                 .arg(port.stopBits())
-                 );
-
-            // erase the read buffer before the data are send
-            readBuffer.clear();
-
-            // open the port, if the operation fails, show the message
-            if(!port.open(QIODevice::ReadWrite)) {
-                QMessageBox::critical(this,
-                                      tr("Cannot open port"),
-                                      tr("Error: %1").arg(port.errorString()),
-                                      QMessageBox::Close);
-                return;
-            }
-
-            QThread::msleep(100);
-
-            // write data to the port
-            info(tr("Writing data to the selected port..."));
-            port.write(data.data(), data.count());
-            info(tr("Data sent."));
-            statusBar()->showMessage(tr("Data were send, waiting for response (if any)..."), 5000);
-        }
+        sendDataToPort(data);
     });
 }
 
@@ -220,6 +140,7 @@ void MainWindow::initializePort()
     ui->cbParity->addItem(tr("Even"), QSerialPort::EvenParity);
     ui->cbParity->addItem(tr("Space"), QSerialPort::SpaceParity);
     ui->cbParity->addItem(tr("Mark"), QSerialPort::MarkParity);
+    // deprecated, but still supported in Qt
     ui->cbParity->addItem(tr("Unknown"), QSerialPort::UnknownParity);
 
     ui->cbParity->setCurrentIndex(0);
@@ -236,6 +157,7 @@ void MainWindow::initializePort()
     ui->cbStopBit->addItem(tr("1 OneStop"), QSerialPort::OneStop);
     ui->cbStopBit->addItem(tr("1,5 OneAndHalfStop"), QSerialPort::OneAndHalfStop);
     ui->cbStopBit->addItem(tr("2 TwoStop"), QSerialPort::TwoStop);
+    // deprecated, but still supported in Qt
     ui->cbStopBit->addItem(tr("? UnknownStopBits "), QSerialPort::UnknownStopBits);
 
     ui->cbStopBit->setCurrentIndex(2);
@@ -297,6 +219,102 @@ void MainWindow::info(const QString &msg)
                                );
 }
 
+QByteArray MainWindow::prepareData(bool *isOk)
+{
+    bool dataAreValid = true;
+    bool ok = false;
+    // output port data
+    QByteArray data;
+
+    // add data entered as hexa numbers
+    data.append(ui->leAddress1->text().toInt(&ok, 16)); dataAreValid &= ok;
+    data.append(ui->leFunction->text().toInt(&ok, 16)); dataAreValid &= ok;
+
+    // address is 1 WORD, needs to be stored byte per byte
+    int startAddr = ui->leStartAddress->text().toInt(&ok, 16); dataAreValid &= ok;
+    data.append(startAddr >> 8);
+    data.append(startAddr & 0xFF);
+
+    // data bytes are entered as hexa values, one value per line
+    QStringList dataText = ui->teData->toPlainText().split("\n");
+    qDebug() << dataText;
+
+    for(const QString& it : dataText) {
+        data.append(it.toInt(&ok, 16)); dataAreValid &= ok;
+    }
+
+    // validate data
+    if(!ok) {
+        QMessageBox::critical(this,
+                              tr("Data error"),
+                              tr("At least one field contains invalid data, please correct the values"),
+                              QMessageBox::Close);
+        statusBar()->showMessage(tr("Input data are not valid"));
+        *isOk = false;
+        return QByteArray();
+    }
+
+    // calculate CRC
+    unsigned int crc = crc_chk((unsigned char*) data.data(), data.count());
+    info(tr("CRC: %1").arg(QString::number(crc, 16).rightJustified(4, '0')));
+
+    // add CRC, LOW byte goes first
+    data.append(crc & 0xFF);
+    data.append(crc >> 8);
+
+    // only output to UI
+    QString crcText = QString::number(crc, 16).rightJustified(4, '0');
+    ui->leCRC->setText(crcText);
+
+    *isOk = true;
+    return data;
+}
+
+void MainWindow::sendDataToPort(const QByteArray &data)
+{
+    // if the port is still open, close it first
+    if(port.isOpen()) port.close();
+
+    // if the port was closed, then send data
+    if(!port.isOpen()) {
+        // do the port setup according to user setup
+        port.setPort(QSerialPortInfo(ui->cbPort->currentData().toString()));
+        port.setBaudRate(ui->cbPortSpeed->currentData().toInt());
+        port.setParity((QSerialPort::Parity) ui->cbParity->currentData().toInt());
+        port.setStopBits((QSerialPort::StopBits) ui->cbStopBit->currentData().toInt());
+        port.setDataBits((QSerialPort::DataBits) ui->cbDataBit->currentData().toInt());
+
+        // show the settings in the log
+        info(tr("Port: %1: %2,%3,%4,%5")
+             .arg(port.portName())
+             .arg(port.baudRate())
+             .arg(port.dataBits())
+             .arg(port.parity())
+             .arg(port.stopBits())
+             );
+
+        // erase the read buffer before the data are send
+        readBuffer.clear();
+
+        // open the port, if the operation fails, show the message
+        if(!port.open(QIODevice::ReadWrite)) {
+            QMessageBox::critical(this,
+                                  tr("Cannot open port"),
+                                  tr("Error: %1").arg(port.errorString()),
+                                  QMessageBox::Close);
+            return;
+        }
+
+        QThread::msleep(100);
+
+        // write data to the port
+        info(tr("Writing data to the selected port..."));
+        port.write(data.data(), data.count());
+        info(tr("Data sent."));
+        statusBar()->showMessage(tr("Data were send, waiting for response (if any)..."), 5000);
+    }
+}
+
 void MainWindow::on_serialPortReadyRead()
 {
     info(tr("Data received"));
@@ -317,19 +335,22 @@ void MainWindow::on_serialPortError(QSerialPort::SerialPortError err)
     info(tr("Při přenosu dat došlo k chybě č. %1").arg(err));
     QString errMsg;
     switch(err) {
-    case QSerialPort::DeviceNotFoundError: errMsg = tr("Device not found error"); break;
-    case QSerialPort::PermissionError: errMsg = tr("An error occurred while attempting to open an already opened device by another process or a user not having enough permission and credentials to open."); break;
-    case QSerialPort::OpenError: errMsg = tr("An error occurred while attempting to open an already opened device in this object."); break;
-    case QSerialPort::NotOpenError: errMsg = tr("This error occurs when an operation is executed that can only be successfully performed if the device is open."); break;
-    case QSerialPort::ParityError: errMsg = tr("Parity error detected by the hardware while reading data."); break;
-    case QSerialPort::FramingError: errMsg = tr("Framing error detected by the hardware while reading data."); break;
-    case QSerialPort::BreakConditionError: errMsg = tr("Break condition detected by the hardware on the input line."); break;
-    case QSerialPort::WriteError: errMsg = tr("An I/O error occurred while writing the data."); break;
-    case QSerialPort::ReadError: errMsg = tr("An I/O error occurred while reading the data."); break;
-    case QSerialPort::ResourceError: errMsg = tr("An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system."); break;
-    case QSerialPort::UnsupportedOperationError: errMsg = tr("The requested device operation is not supported or prohibited by the running operating system."); break;
-    case QSerialPort::TimeoutError: errMsg = tr("A timeout error occurred."); break;
-    case QSerialPort::UnknownError: errMsg = tr("An unidentified error occurred."); break;
+        case QSerialPort::DeviceNotFoundError: errMsg = tr("Device not found error"); break;
+        case QSerialPort::PermissionError: errMsg = tr("An error occurred while attempting to open an already opened device by another process or a user not having enough permission and credentials to open."); break;
+        case QSerialPort::OpenError: errMsg = tr("An error occurred while attempting to open an already opened device in this object."); break;
+        case QSerialPort::NotOpenError: errMsg = tr("This error occurs when an operation is executed that can only be successfully performed if the device is open."); break;
+        // deprecated, but still supported in Qt
+        case QSerialPort::ParityError: errMsg = tr("Parity error detected by the hardware while reading data."); break;
+        // deprecated, but still supported in Qt
+        case QSerialPort::FramingError: errMsg = tr("Framing error detected by the hardware while reading data."); break;
+        // deprecated, but still supported in Qt
+        case QSerialPort::BreakConditionError: errMsg = tr("Break condition detected by the hardware on the input line."); break;
+        case QSerialPort::WriteError: errMsg = tr("An I/O error occurred while writing the data."); break;
+        case QSerialPort::ReadError: errMsg = tr("An I/O error occurred while reading the data."); break;
+        case QSerialPort::ResourceError: errMsg = tr("An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system."); break;
+        case QSerialPort::UnsupportedOperationError: errMsg = tr("The requested device operation is not supported or prohibited by the running operating system."); break;
+        case QSerialPort::TimeoutError: errMsg = tr("A timeout error occurred."); break;
+        case QSerialPort::UnknownError: errMsg = tr("An unidentified error occurred."); break;
     }
     QMessageBox::critical(this,
                           tr("Error"),
