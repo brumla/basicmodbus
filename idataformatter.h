@@ -33,6 +33,7 @@ public:
     /// \return
     ///
     virtual IDataFormatter* write(quint8 highByte, quint8 lowByte) = 0;
+    virtual IDataFormatter* write(quint16 word) = 0;
 
     ///
     /// \brief add the expected bytes which will be read from the bus (only for read operation)
@@ -40,6 +41,9 @@ public:
     /// \return
     ///
     virtual IDataFormatter* readDataCount(quint16 count) = 0;
+
+    virtual IDataFormatter* startAddress(quint8 highByte, quint8 lowByte) = 0;
+    virtual IDataFormatter* startAddress(quint16 addr) = 0;
 
     ///
     /// \brief build the datablock, data are available via dataToBeSend() function
@@ -53,9 +57,9 @@ public:
     ///
     virtual inline QByteArray dataToBeSend() { return m_dataToBeSend; }
 
-private:
+protected:
     QByteArray              m_dataToBeSend;
-    QByteArray              m_dataToBeWritten;
+    QByteArray              m_dataReceived;
 };
 
 #endif // IDATAFORMATTER_H

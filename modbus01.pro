@@ -45,11 +45,13 @@ SOURCES += main.cpp \
         modbus_utils.cpp \
         mainwindow.cpp \
     idataformatter.cpp \
-    common_utils.cpp
+    common_utils.cpp \
+    rtudataformatter.cpp
 
 HEADERS += modbus_utils.h mainwindow.h \
     idataformatter.h \
-    common_utils.h
+    common_utils.h \
+    rtudataformatter.h
 
 FORMS += mainwindow.ui
 
