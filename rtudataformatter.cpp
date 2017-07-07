@@ -1,4 +1,5 @@
 #include "rtudataformatter.h"
+#include "modbus_utils.h"
 
 RTUDataFormatter::RTUDataFormatter()
 {
