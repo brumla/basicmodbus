@@ -75,6 +75,7 @@ private:
     ///
     /// \brief validates input
     /// \return true if the input is valid otherwise false
+    /// \todo Remove business logic, use one of the IDataFormatter implementation
     ///
     bool validator();
 
@@ -88,7 +89,7 @@ private:
     /// \brief prepare data which will be send to the selected port
     /// \param ok
     /// \return
-    ///
+    /// \todo Remove business logic, use one of the IDataFormatter implementation
     QByteArray prepareData(bool *isOk);
 
     ///
