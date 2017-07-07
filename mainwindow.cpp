@@ -281,6 +281,7 @@ void MainWindow::sendDataToPort(const QByteArray &data)
             return;
         }
 
+        // sleep for 100 ms to be sure the bus is ready
         QThread::msleep(100);
 
         // write data to the port

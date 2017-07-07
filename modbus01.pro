@@ -43,9 +43,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
         modbus_utils.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    idataformatter.cpp
 
-HEADERS += modbus_utils.h mainwindow.h
+HEADERS += modbus_utils.h mainwindow.h \
+    idataformatter.h
 
 FORMS += mainwindow.ui
 
