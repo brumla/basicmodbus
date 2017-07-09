@@ -28,7 +28,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include <QThread>
 
 #include <QDebug>
-
 #include "modbus_utils.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -46,6 +45,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(on_serialPortError(QSerialPort::SerialPortError)));
 
     QAction *actSendData = ui->mainToolBar->addAction(tr("Send data"));
+    QAction *closePort = ui->mainToolBar->addAction(tr("Close port"));
+
+    connect(closePort, &QAction::triggered, [=]() {
+        if(port.isOpen()) {
+            port.close();
+            statusBar()->showMessage(tr("Port closed"), 4000);
+        }
+    });
 
     /*
      * Send data to selected port, the port is always closed and reopen with current settings
@@ -67,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
             buff.append(QString::number(it, 16).toUpper()).rightJustified(2, '0');
             buff.append(" ");
         }
-        info(tr("Data send to MODBUS: %1").arg(buff));
+        info(tr("Sending data to MODBUS: %1").arg(buff));
 
         sendDataToPort(data);
     });
@@ -161,7 +168,7 @@ bool MainWindow::validator()
     }
     else {
         QStringList lst = ui->teData->toPlainText().split("\n");
-        if(lst.size() % 2 != 0) err += tr("The number of send bytes must be even!\n");
+        if(lst.size() % 2 != 0) err += tr("The number of sent bytes must be even!\n");
 
         bool exceedLen = false;
         for(const QString& it: lst) {
@@ -288,7 +295,7 @@ void MainWindow::sendDataToPort(const QByteArray &data)
         info(tr("Writing data to the selected port..."));
         port.write(data.data(), data.count());
         info(tr("Data sent."));
-        statusBar()->showMessage(tr("Data were send, waiting for response (if any)..."), 5000);
+        statusBar()->showMessage(tr("Data were sent, waiting for response (if any)..."), 5000);
     }
 }
 
