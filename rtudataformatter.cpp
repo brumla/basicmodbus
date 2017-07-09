@@ -3,7 +3,7 @@
 
 RTUDataFormatter::RTUDataFormatter()
 {
-    m_dataToBeSend.clear();
+
 }
 
 IDataFormatter *RTUDataFormatter::address(quint8 addr)
@@ -52,5 +52,6 @@ IDataFormatter *RTUDataFormatter::startAddress(quint16 addr)
 
 IDataFormatter *RTUDataFormatter::build()
 {
+    m_dataToBeSend.clear();
     return this;
 }
