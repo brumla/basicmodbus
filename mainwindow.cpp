@@ -124,7 +124,7 @@ void MainWindow::initializePort()
     ui->cbParity->addItem(tr("Space"), QSerialPort::SpaceParity);
     ui->cbParity->addItem(tr("Mark"), QSerialPort::MarkParity);
     // deprecated, but still supported in Qt
-    ui->cbParity->addItem(tr("Unknown"), QSerialPort::UnknownParity);
+//    ui->cbParity->addItem(tr("Unknown"), QSerialPort::UnknownParity);
 
     ui->cbParity->setCurrentIndex(0);
 
@@ -141,7 +141,7 @@ void MainWindow::initializePort()
     ui->cbStopBit->addItem(tr("1,5 OneAndHalfStop"), QSerialPort::OneAndHalfStop);
     ui->cbStopBit->addItem(tr("2 TwoStop"), QSerialPort::TwoStop);
     // deprecated, but still supported in Qt
-    ui->cbStopBit->addItem(tr("? UnknownStopBits "), QSerialPort::UnknownStopBits);
+//    ui->cbStopBit->addItem(tr("? UnknownStopBits "), QSerialPort::UnknownStopBits);
 
     ui->cbStopBit->setCurrentIndex(2);
 
@@ -331,11 +331,11 @@ void MainWindow::on_serialPortError(QSerialPort::SerialPortError err)
         case QSerialPort::OpenError: errMsg = tr("An error occurred while attempting to open an already opened device in this object."); break;
         case QSerialPort::NotOpenError: errMsg = tr("This error occurs when an operation is executed that can only be successfully performed if the device is open."); break;
         // deprecated, but still supported in Qt
-        case QSerialPort::ParityError: errMsg = tr("Parity error detected by the hardware while reading data."); break;
+//        case QSerialPort::ParityError: errMsg = tr("Parity error detected by the hardware while reading data."); break;
         // deprecated, but still supported in Qt
-        case QSerialPort::FramingError: errMsg = tr("Framing error detected by the hardware while reading data."); break;
+//        case QSerialPort::FramingError: errMsg = tr("Framing error detected by the hardware while reading data."); break;
         // deprecated, but still supported in Qt
-        case QSerialPort::BreakConditionError: errMsg = tr("Break condition detected by the hardware on the input line."); break;
+//        case QSerialPort::BreakConditionError: errMsg = tr("Break condition detected by the hardware on the input line."); break;
         case QSerialPort::WriteError: errMsg = tr("An I/O error occurred while writing the data."); break;
         case QSerialPort::ReadError: errMsg = tr("An I/O error occurred while reading the data."); break;
         case QSerialPort::ResourceError: errMsg = tr("An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system."); break;
@@ -370,6 +370,8 @@ void MainWindow::on_action_about_triggered()
 
     QMessageBox::information(this,
                              tr("About"),
-                             licence,
+                             QString("%1\nQt Version: %2")
+                                .arg(licence)
+                                .arg(QT_VERSION_STR),
                              QMessageBox::Close);
 }
