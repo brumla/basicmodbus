@@ -3,6 +3,7 @@
 
 #include <QByteArray>
 #include <QtGlobal>
+#include <QString>
 
 ///
 /// \brief This is data formatter top abstract class
@@ -45,6 +46,8 @@ public:
     virtual IDataFormatter* startAddress(quint8 highByte, quint8 lowByte) = 0;
     virtual IDataFormatter* startAddress(quint16 addr) = 0;
 
+    virtual IDataFormatter* appendBytes(quint8 data) = 0;
+
     ///
     /// \brief build the datablock, data are available via dataToBeSend() function
     /// \return
@@ -53,13 +56,22 @@ public:
 
     ///
     /// \brief the data buffer contains complete block of dat to be send including CRC
-    /// \return
+    /// \return bytes to be send to the port, if there is any error, the returned value is empty and lastError is set
     ///
     virtual inline QByteArray dataToBeSend() { return m_dataToBeSend; }
+
+    ///
+    /// \brief Return last error if any. If no error was found, empty QString is returned
+    ///
+    inline QString lastError() {return m_lastError;}
 
 protected:
     QByteArray              m_dataToBeSend;
     QByteArray              m_dataReceived;
+    QString                 m_lastError;
+
+private:
+    void cleanError();
 };
 
 #endif // IDATAFORMATTER_H

@@ -76,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
         }
         info(tr("Sending data to MODBUS: %1").arg(buff));
 
+        qDebug() << "Sending data to selected port, data size=" << data.size();
         sendDataToPort(data);
     });
 }

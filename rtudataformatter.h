@@ -14,6 +14,7 @@ public:
     IDataFormatter *write(quint8 highByte, quint8 lowByte);
     IDataFormatter *write(quint16 word);
     IDataFormatter *readDataCount(quint16 count);
+    IDataFormatter *appendBytes(quint8 data);
     IDataFormatter *startAddress(quint8 highByte, quint8 lowByte);
     IDataFormatter *startAddress(quint16 addr);
     IDataFormatter *build();
@@ -26,6 +27,8 @@ private:
     quint16             m_startAddressLow;
     quint16             m_startAddressHigh;
     bool                m_isReadOperation = false;
+    QByteArray          m_temporaryBytes;
+
 };
 
 #endif // RTUDATAFORMATTER_H
