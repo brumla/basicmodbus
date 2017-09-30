@@ -81,6 +81,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
+        MainWindow->setEnabled(true);
         MainWindow->resize(800, 611);
         MainWindow->setMinimumSize(QSize(800, 600));
         action_Quit = new QAction(MainWindow);
@@ -208,7 +209,6 @@ public:
 
         comboBox = new QComboBox(groupBox_3);
         comboBox->setObjectName(QStringLiteral("comboBox"));
-        comboBox->setEnabled(false);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -306,12 +306,14 @@ public:
         QWidget::setTabOrder(cbPortSpeed, cbDataBit);
         QWidget::setTabOrder(cbDataBit, cbParity);
         QWidget::setTabOrder(cbParity, cbStopBit);
-        QWidget::setTabOrder(cbStopBit, leAddress1);
+        QWidget::setTabOrder(cbStopBit, comboBox);
+        QWidget::setTabOrder(comboBox, leAddress1);
         QWidget::setTabOrder(leAddress1, leFunction);
         QWidget::setTabOrder(leFunction, leStartAddress);
         QWidget::setTabOrder(leStartAddress, teData);
         QWidget::setTabOrder(teData, leCRC);
         QWidget::setTabOrder(leCRC, teOutput);
+        QWidget::setTabOrder(teOutput, teLog);
 
         menuBar->addAction(menu_File->menuAction());
         menuBar->addAction(menu_help->menuAction());
@@ -344,7 +346,7 @@ public:
         leStartAddress->setPlaceholderText(QApplication::translate("MainWindow", "Four hexa digits (2A0F...)", Q_NULLPTR));
         label_2->setText(QApplication::translate("MainWindow", "Address:", Q_NULLPTR));
         leFunction->setPlaceholderText(QApplication::translate("MainWindow", "Two hexa digits (2A, 0F...)", Q_NULLPTR));
-        label_6->setText(QApplication::translate("MainWindow", "CRC:", Q_NULLPTR));
+        label_6->setText(QApplication::translate("MainWindow", "CRC/LRC:", Q_NULLPTR));
         leCRC->setText(QString());
         leCRC->setPlaceholderText(QString());
         groupBox_2->setTitle(QApplication::translate("MainWindow", "Output data (HEX)", Q_NULLPTR));

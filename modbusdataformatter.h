@@ -23,6 +23,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include <QObject>
 #include <QString>
 
+///
+/// \brief MODBUS data error codes
+///
 enum class ModbusDataError {
     NO_ERROR,
     INVALID_ADDRESS_NUMBER,
@@ -33,19 +36,45 @@ enum class ModbusDataError {
     INPUT_DATA_NOT_BYTE
 };
 
+///
+/// \brief Modbus protocol: BINARY(RTU) or ASCII
+///
 enum class ModbusProtocol {
     BINARY,
     ASCII
 };
 
+///
+/// \brief MODBUS protocol data formatter. The output of the calculation is the BINARY or ASCII
+/// data buffer incl. CRC or LRC
+///
 class ModbusDataFormatter
 {
 public:
+    ///
+    /// \brief Constructor
+    /// \param protocol which protocol will be used for communication
+    ///
     ModbusDataFormatter(ModbusProtocol protocol);
+
+    ///
+    /// \brief set the output data
+    /// \param address address of the device (BYTE, ascii hex)
+    /// \param function function code or address (BYTE, ascii hex)
+    /// \param startAddress device memory address (WORD, ascii hex)
+    /// \param inputData input data (n*WORD as ascii hex bytes separated by CR, LF or TAB)
+    /// \return error if any occuress or NO_ERROR
+    ///
     ModbusDataError setOutputData(const QString& address,
                        const QString& function,
                        const QString& startAddress,
                        const QString& inputData);
+
+    ///
+    /// \brief Calculates output data and store the complete data buffer into the returned value, the
+    /// data buffer contains also CRC or LRC check
+    /// \return data for the serial port
+    ///
     QByteArray calculateOutputData();
 
     // properties

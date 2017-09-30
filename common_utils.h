@@ -1,30 +1,41 @@
+/*
+Basic MODBUS communication tool
+Copyright (C) 2017 Martin Zúber
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+*/
+
 #ifndef COMMON_UTILS_H
 #define COMMON_UTILS_H
 
 #include <QtGlobal>
 #include <QString>
 
-///
-/// \brief converts hexadecimal number stored as string to integer, use for the data exchange from GUI
-/// \param number as hexadecimal string, only digits 0-9A-F are allowed
-/// \return converted number as integer
-///
-int hexs2int(const QString& number);
 
 ///
-/// \brief converts hexadecimal number stored as string to byte, use for the data exchange from GUI
-/// \param number as hexadecimal string, only digits 0-9A-F are allowed
-/// \return converted number as byte
+/// \brief calculates the ASCII representation of the lower qubit
+/// \param byte
+/// \return ASCII representation of the lower qubit
 ///
-quint8 hexs2byte(const QString& number);
-
-/// \brief converts hexadecimal number stored as string to word, use for the data exchange from GUI
-/// \param number as hexadecimal string, only digits 0-9A-F are allowed
-/// \return converted number as word
-quint16 hexs2word(const QString& number);
-
 quint8 lowQb(quint8 byte);
 
+///
+/// \brief calculates the ASCII representation of the higher qubit
+/// \param byte
+/// \return ASCII representation of the higher qubit
+///
 quint8 highQb(quint8 byte);
 
 #endif // COMMON_UTILS_H

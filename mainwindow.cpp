@@ -64,9 +64,6 @@ MainWindow::MainWindow(QWidget *parent) :
         qDebug() << "Action triggered";
         bool ok;
 
-        if(!validator()) return;
-        info("RTU MODE");
-
         QByteArray data = prepareData(&ok);
         if(!ok) return;
 
@@ -118,8 +115,6 @@ void MainWindow::initializePort()
     ui->cbParity->addItem(tr("Even"), QSerialPort::EvenParity);
     ui->cbParity->addItem(tr("Space"), QSerialPort::SpaceParity);
     ui->cbParity->addItem(tr("Mark"), QSerialPort::MarkParity);
-    // deprecated, but still supported in Qt
-//    ui->cbParity->addItem(tr("Unknown"), QSerialPort::UnknownParity);
 
     ui->cbParity->setCurrentIndex(0);
 
@@ -135,60 +130,12 @@ void MainWindow::initializePort()
     ui->cbStopBit->addItem(tr("1 OneStop"), QSerialPort::OneStop);
     ui->cbStopBit->addItem(tr("1,5 OneAndHalfStop"), QSerialPort::OneAndHalfStop);
     ui->cbStopBit->addItem(tr("2 TwoStop"), QSerialPort::TwoStop);
-    // deprecated, but still supported in Qt
-//    ui->cbStopBit->addItem(tr("? UnknownStopBits "), QSerialPort::UnknownStopBits);
 
     ui->cbStopBit->setCurrentIndex(2);
 
     ui->comboBox->setEnabled(true);
 
     statusBar()->showMessage(tr("Application initialized"), 5000);
-}
-
-bool MainWindow::validator()
-{
-    /*
-     * GUI validations
-     */
-    info("Input data validation...");
-/*
-    QString err;
-
-    // address, function, start address are easy, just check the entered text length
-    if (ui->leAddress1->text().length() != 2) err += tr("Address must have 2 digits!\n");
-    if (ui->leFunction->text().length() != 2) err += tr("Function must have 2 digits!\n");
-    if (ui->leStartAddress->text().length() != 4) err += tr("Start address must have 4 digits!\n");
-
-    // data are stored as pairs, there must be always at least one WORD entered as two bytes
-    if (ui->teData->blockCount() < 2) {
-        err += tr("The output data must have 2 digit for read mode or 2+ digits for write mode!\n");
-    }
-    else {
-        QStringList lst = ui->teData->toPlainText().split("\n");
-        if(lst.size() % 2 != 0) err += tr("The number of sent bytes must be even!\n");
-
-        bool exceedLen = false;
-        for(const QString& it: lst) {
-            if(it.length() > 2) exceedLen = true;
-        }
-
-        if(exceedLen) err += tr("The length of the entered byte value must have 2 digits only!\n");
-    }
-
-
-    qDebug() << err;
-
-    // show the message if there is any error and return false
-    if(err.length() > 0) {
-        QMessageBox::critical(this,
-                              tr("Input data error"),
-                              tr("Cannot send data to the device:\n\n%1").arg(err),
-                              QMessageBox::Close);
-        info(tr("Validace selhala"));
-        return false;
-    } */
-    statusBar()->showMessage(tr("Input data are valid"), 5000);
-    return true;
 }
 
 void MainWindow::info(const QString &msg)
@@ -251,6 +198,7 @@ QByteArray MainWindow::prepareData(bool *isOk) {
         ui->leCRC->setText(QString(outputData).trimmed().right(2));
     }
 
+    // show the data output in console for RTU and ASCII as bytes
     QString bytesResult = tr("Bytes: ");
     for(quint8 it : outputData) {
         bytesResult.append(QString::number(it, 16).rightJustified(2, '0'));
@@ -258,10 +206,12 @@ QByteArray MainWindow::prepareData(bool *isOk) {
     }
     info(bytesResult);
 
+    // if the protocol is ASCII then show the ASCII output
     bytesResult.clear();
     if(protocol == ModbusProtocol::ASCII) {
         bytesResult.append("ASCII: ");
         for(quint8 it : outputData) {
+            // handle the whitechars correctly
             switch(it) {
             case 13:
                 bytesResult.append("CR");
@@ -279,59 +229,6 @@ QByteArray MainWindow::prepareData(bool *isOk) {
 
     return outputData;
 }
-
-/*
-QByteArray MainWindow::prepareData(bool *isOk)
-{
-    bool dataAreValid = true;
-    bool ok = false;
-    // output port data
-    QByteArray data;
-
-    // add data entered as hexa numbers
-    data.append(ui->leAddress1->text().toInt(&ok, 16)); dataAreValid &= ok;
-    data.append(ui->leFunction->text().toInt(&ok, 16)); dataAreValid &= ok;
-
-    // address is 1 WORD, needs to be stored byte per byte
-    int startAddr = ui->leStartAddress->text().toInt(&ok, 16); dataAreValid &= ok;
-    data.append(startAddr >> 8);
-    data.append(startAddr & 0xFF);
-
-    // data bytes are entered as hexa values, one value per line
-    QStringList dataText = ui->teData->toPlainText().split("\n");
-    qDebug() << dataText;
-
-    for(const QString& it : dataText) {
-        data.append(it.toInt(&ok, 16)); dataAreValid &= ok;
-    }
-
-    // validate data
-    if(!ok) {
-        QMessageBox::critical(this,
-                              tr("Data error"),
-                              tr("At least one field contains invalid data, please correct the values"),
-                              QMessageBox::Close);
-        statusBar()->showMessage(tr("Input data are not valid"));
-        *isOk = false;
-        return QByteArray();
-    }
-
-    // calculate CRC
-    unsigned int crc = crc_chk((unsigned char*) data.data(), data.count());
-    info(tr("CRC: %1").arg(QString::number(crc, 16).rightJustified(4, '0')));
-
-    // add CRC, LOW byte goes first
-    data.append(crc & 0xFF);
-    data.append(crc >> 8);
-
-    // only output to UI
-    QString crcText = QString::number(crc, 16).rightJustified(4, '0');
-    ui->leCRC->setText(crcText);
-
-    *isOk = true;
-    return data;
-}
-*/
 
 void MainWindow::sendDataToPort(const QByteArray &data)
 {
@@ -410,12 +307,6 @@ void MainWindow::on_serialPortError(QSerialPort::SerialPortError err)
         case QSerialPort::PermissionError: errMsg = tr("An error occurred while attempting to open an already opened device by another process or a user not having enough permission and credentials to open."); break;
         case QSerialPort::OpenError: errMsg = tr("An error occurred while attempting to open an already opened device in this object."); break;
         case QSerialPort::NotOpenError: errMsg = tr("This error occurs when an operation is executed that can only be successfully performed if the device is open."); break;
-        // deprecated, but still supported in Qt
-//        case QSerialPort::ParityError: errMsg = tr("Parity error detected by the hardware while reading data."); break;
-        // deprecated, but still supported in Qt
-//        case QSerialPort::FramingError: errMsg = tr("Framing error detected by the hardware while reading data."); break;
-        // deprecated, but still supported in Qt
-//        case QSerialPort::BreakConditionError: errMsg = tr("Break condition detected by the hardware on the input line."); break;
         case QSerialPort::WriteError: errMsg = tr("An I/O error occurred while writing the data."); break;
         case QSerialPort::ReadError: errMsg = tr("An I/O error occurred while reading the data."); break;
         case QSerialPort::ResourceError: errMsg = tr("An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system."); break;

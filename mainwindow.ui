@@ -389,12 +389,14 @@
   <tabstop>cbDataBit</tabstop>
   <tabstop>cbParity</tabstop>
   <tabstop>cbStopBit</tabstop>
+  <tabstop>comboBox</tabstop>
   <tabstop>leAddress1</tabstop>
   <tabstop>leFunction</tabstop>
   <tabstop>leStartAddress</tabstop>
   <tabstop>teData</tabstop>
   <tabstop>leCRC</tabstop>
   <tabstop>teOutput</tabstop>
+  <tabstop>teLog</tabstop>
  </tabstops>
  <resources/>
  <connections/>

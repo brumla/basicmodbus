@@ -698,6 +698,8 @@ debug\modbusdataformatter.obj: modbusdataformatter.cpp modbusdataformatter.h \
 		E:\Qt\5.9.1\msvc2017_64\include\QtCore\qobject_impl.h \
 		E:\Qt\5.9.1\msvc2017_64\include\QtCore\QString \
 		modbus_utils.h \
+		common_utils.h \
+		E:\Qt\5.9.1\msvc2017_64\include\QtCore\QtGlobal \
 		E:\Qt\5.9.1\msvc2017_64\include\QtCore\QDebug \
 		E:\Qt\5.9.1\msvc2017_64\include\QtCore\qdebug.h \
 		E:\Qt\5.9.1\msvc2017_64\include\QtCore\qhash.h \

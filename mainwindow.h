@@ -73,13 +73,6 @@ private:
     void initializePort();
 
     ///
-    /// \brief validates input
-    /// \return true if the input is valid otherwise false
-    /// \todo Remove business logic, use one of the IDataFormatter implementation
-    ///
-    bool validator();
-
-    ///
     /// \brief add new informative message into the log
     /// \param msg message
     ///
