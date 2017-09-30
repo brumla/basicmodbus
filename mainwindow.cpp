@@ -28,12 +28,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include <QThread>
 
 #include <QDebug>
+
 #include "modbus_utils.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
-{    
+{
     ui->setupUi(this);
     initializePort();
 
@@ -203,6 +204,11 @@ void MainWindow::info(const QString &msg)
                                );
 }
 
+QByteArray MainWindow::prepareData(bool *isOk) {
+    return QByteArray();
+}
+
+/*
 QByteArray MainWindow::prepareData(bool *isOk)
 {
     bool dataAreValid = true;
@@ -253,6 +259,7 @@ QByteArray MainWindow::prepareData(bool *isOk)
     *isOk = true;
     return data;
 }
+*/
 
 void MainWindow::sendDataToPort(const QByteArray &data)
 {
