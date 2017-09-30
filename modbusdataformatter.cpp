@@ -18,7 +18,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
 #include "modbusdataformatter.h"
+#include "modbus_utils.h"
 
+#include <QDebug>
 
 ModbusDataFormatter::ModbusDataFormatter(ModbusProtocol protocol) :
     m_isValid(false),
@@ -45,7 +47,8 @@ ModbusDataError ModbusDataFormatter::setOutputData(const QString &address, const
     }
 
     // unpack the input data
-    QStringList bytes = inputData.split("[\n\r\t]", QString::SkipEmptyParts);
+    QStringList bytes = inputData.trimmed().split(QRegExp("[\n\r\t]+"), QString::SkipEmptyParts);
+    qDebug() << "Bytes: " << bytes.size();
     if(bytes.size() % 2 != 0) {
         // only even count is allowed
         return ModbusDataError::DATA_NOT_WORD_ALIGNED;
@@ -62,4 +65,26 @@ ModbusDataError ModbusDataFormatter::setOutputData(const QString &address, const
     }
 
     return ModbusDataError::NO_ERROR;
+}
+
+QByteArray ModbusDataFormatter::calculateOutputData()
+{
+    if(m_protocol == ModbusProtocol::BINARY) {
+        QByteArray output;
+        output.append(m_address);
+        output.append(m_function);
+        output.append(m_startAddress >> 8);
+        output.append(m_startAddress & 0xFF);
+
+        for(const unsigned char it : m_data) {
+            output.append(it);
+        }
+
+        m_crc = crc_chk((unsigned char *) output.data(), output.count());
+        output.append(m_crc & 0xFF);
+        output.append(m_crc >> 8);
+
+        return output;
+    }
+    return QByteArray();
 }

@@ -30,6 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include <QDebug>
 
 #include "modbus_utils.h"
+#include "modbusdataformatter.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -68,14 +69,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
         QByteArray data = prepareData(&ok);
         if(!ok) return;
-
-        // show the data in log as list of hexadecimal numbers incl. trailing zeroes
-        QString buff;
-        for(unsigned char it: data) {
-            buff.append(QString::number(it, 16).toUpper()).rightJustified(2, '0');
-            buff.append(" ");
-        }
-        info(tr("Sending data to MODBUS: %1").arg(buff));
 
         qDebug() << "Sending data to selected port, data size=" << data.size();
         sendDataToPort(data);
@@ -156,7 +149,7 @@ bool MainWindow::validator()
      * GUI validations
      */
     info("Input data validation...");
-
+/*
     QString err;
 
     // address, function, start address are easy, just check the entered text length
@@ -191,7 +184,7 @@ bool MainWindow::validator()
                               QMessageBox::Close);
         info(tr("Validace selhala"));
         return false;
-    }
+    } */
     statusBar()->showMessage(tr("Input data are valid"), 5000);
     return true;
 }
@@ -205,7 +198,58 @@ void MainWindow::info(const QString &msg)
 }
 
 QByteArray MainWindow::prepareData(bool *isOk) {
-    return QByteArray();
+    ModbusDataFormatter formatter(ModbusProtocol::BINARY);
+    ModbusDataError result = formatter.setOutputData(ui->leAddress1->text(),
+                            ui->leFunction->text(),
+                            ui->leStartAddress->text(),
+                            ui->teData->toPlainText());
+    if(result != ModbusDataError::NO_ERROR) {
+        QString err;
+
+        switch (result) {
+        case ModbusDataError::DATA_NOT_WORD_ALIGNED:
+            err = tr("Output data are not WORD aligned (2 BYTES per WORD)");
+            break;
+        case ModbusDataError::INPUT_DATA_NOT_BYTE:
+            err = tr("Input data are not bytes separated by CR, CRLF or TAB");
+            break;
+        case ModbusDataError::INVALID_ADDRESS_NUMBER:
+            err = tr("Address number is invalid");
+            break;
+        case ModbusDataError::INVALID_DATA_NUMBER:
+            err = tr("Entered data bytes are not valid hexa numbers");
+            break;
+        case ModbusDataError::INVALID_FUNCTION_NUMBER:
+            err = tr("Function number is invalid");
+            break;
+        case ModbusDataError::INVALID_START_ADDRESS_NUMBER:
+            err = tr("Start address is invalid");
+            break;
+        default:
+            break;
+        }
+
+        QMessageBox::critical(this,
+                              tr("Error"),
+                              err);
+        *isOk = false;
+        return QByteArray();
+    }
+
+    *isOk = true;
+    QByteArray outputData = formatter.calculateOutputData();
+    unsigned int crc = formatter.crc();
+    ui->leCRC->setText(QString::number(crc, 16).rightJustified(4, '0'));
+
+    QString bytesResult = tr("Bytes: ");
+    for(quint8 it : outputData) {
+        bytesResult.append(QString::number(it, 16).rightJustified(2, '0'));
+        bytesResult.append(" ");
+    }
+
+    info(bytesResult);
+
+    return outputData;
 }
 
 /*

@@ -46,6 +46,10 @@ public:
                        const QString& function,
                        const QString& startAddress,
                        const QString& inputData);
+    QByteArray calculateOutputData();
+
+    // properties
+    inline unsigned int crc() { return m_crc; }
 private:
     quint8                  m_address;
     quint8                  m_function;
