@@ -23,4 +23,8 @@ quint8 hexs2byte(const QString& number);
 /// \return converted number as word
 quint16 hexs2word(const QString& number);
 
+quint8 lowQb(quint8 byte);
+
+quint8 highQb(quint8 byte);
+
 #endif // COMMON_UTILS_H

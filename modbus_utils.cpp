@@ -23,3 +23,4 @@ unsigned int crc_chk(unsigned char* data, unsigned char length){
     return reg_crc;
 }
 // end of code with different licence
+

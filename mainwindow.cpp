@@ -140,6 +140,8 @@ void MainWindow::initializePort()
 
     ui->cbStopBit->setCurrentIndex(2);
 
+    ui->comboBox->setEnabled(true);
+
     statusBar()->showMessage(tr("Application initialized"), 5000);
 }
 
@@ -198,7 +200,9 @@ void MainWindow::info(const QString &msg)
 }
 
 QByteArray MainWindow::prepareData(bool *isOk) {
-    ModbusDataFormatter formatter(ModbusProtocol::BINARY);
+    ModbusProtocol protocol = ui->comboBox->currentText() == "RTU" ? ModbusProtocol::BINARY : ModbusProtocol::ASCII;
+
+    ModbusDataFormatter formatter(protocol);
     ModbusDataError result = formatter.setOutputData(ui->leAddress1->text(),
                             ui->leFunction->text(),
                             ui->leStartAddress->text(),
@@ -238,15 +242,39 @@ QByteArray MainWindow::prepareData(bool *isOk) {
 
     *isOk = true;
     QByteArray outputData = formatter.calculateOutputData();
-    unsigned int crc = formatter.crc();
-    ui->leCRC->setText(QString::number(crc, 16).rightJustified(4, '0'));
+    ui->leCRC->clear();
+    if(protocol == ModbusProtocol::BINARY) {
+        unsigned int crc = formatter.crc();
+        ui->leCRC->setText(QString::number(crc, 16).rightJustified(4, '0'));
+    }
+    else {
+        ui->leCRC->setText(QString(outputData).trimmed().right(2));
+    }
 
     QString bytesResult = tr("Bytes: ");
     for(quint8 it : outputData) {
         bytesResult.append(QString::number(it, 16).rightJustified(2, '0'));
         bytesResult.append(" ");
     }
+    info(bytesResult);
 
+    bytesResult.clear();
+    if(protocol == ModbusProtocol::ASCII) {
+        bytesResult.append("ASCII: ");
+        for(quint8 it : outputData) {
+            switch(it) {
+            case 13:
+                bytesResult.append("CR");
+                break;
+            case 10:
+                bytesResult.append("LF");
+                break;
+            default:
+                bytesResult.append((unsigned char) it);
+            }
+            bytesResult.append(",");
+        }
+    }
     info(bytesResult);
 
     return outputData;

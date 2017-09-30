@@ -19,6 +19,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 #include "modbusdataformatter.h"
 #include "modbus_utils.h"
+#include "common_utils.h"
 
 #include <QDebug>
 
@@ -84,6 +85,36 @@ QByteArray ModbusDataFormatter::calculateOutputData()
         output.append(m_crc & 0xFF);
         output.append(m_crc >> 8);
 
+        return output;
+    }
+    if(m_protocol == ModbusProtocol::ASCII) {
+        QByteArray output;
+        output.append(':');
+        output.append(highQb(m_address));
+        output.append(lowQb(m_address));
+        output.append(highQb(m_function));
+        output.append(lowQb(m_function));
+
+        output.append(lowQb(m_startAddress >> 8));
+        output.append(highQb(m_startAddress >> 8));
+        output.append(lowQb(m_startAddress & 0xFF));
+        output.append(highQb(m_startAddress & 0xFF));
+
+        int lrc_sum = m_address + m_function + (m_startAddress >> 8) + (m_startAddress & 0xFF);
+
+        for(const unsigned char it : m_data) {
+            output.append(highQb(it));
+            output.append(lowQb(it));
+            lrc_sum += it;
+        }
+
+        int mod256 = 256 - (lrc_sum % 256);
+
+        output.append(highQb(mod256));
+        output.append(lowQb(mod256));
+
+        output.append('\r');
+        output.append('\n');
         return output;
     }
     return QByteArray();
