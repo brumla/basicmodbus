@@ -89,6 +89,7 @@ QByteArray ModbusDataFormatter::calculateOutputData()
     }
     if(m_protocol == ModbusProtocol::ASCII) {
         QByteArray output;
+        output.append((char) 2);
         output.append(':');
         output.append(highQb(m_address));
         output.append(lowQb(m_address));
