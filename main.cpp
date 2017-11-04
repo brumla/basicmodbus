@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
 
     //Q_INIT_RESOURCE(licence);
 
+    QCoreApplication::setApplicationName("Basic MODBUS communication tool");
+
     MainWindow w;
     w.show();
 
