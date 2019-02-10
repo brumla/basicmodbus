@@ -151,9 +151,9 @@ QByteArray MainWindow::prepareData(bool *isOk) {
 
     ModbusDataFormatter formatter(protocol);
     ModbusDataError result = formatter.setOutputData(ui->leAddress1->text(),
-                            ui->leFunction->text(),
-                            ui->leStartAddress->text(),
-                            ui->teData->toPlainText());
+                                                     ui->leFunction->text(),
+                                                     ui->leStartAddress->text(),
+                                                     ui->teData->toPlainText());
     if(result != ModbusDataError::NO_ERROR) {
         QString err;
 
@@ -200,8 +200,8 @@ QByteArray MainWindow::prepareData(bool *isOk) {
 
     // show the data output in console for RTU and ASCII as bytes
     QString bytesResult = tr("Bytes: ");
-    for(quint8 it : outputData) {
-        bytesResult.append(QString::number(it, 16).rightJustified(2, '0'));
+    for(char it : outputData) {
+        bytesResult.append(QString::number(uchar(it), 16).rightJustified(2, '0'));
         bytesResult.append(" ");
     }
     info(bytesResult);
@@ -210,9 +210,9 @@ QByteArray MainWindow::prepareData(bool *isOk) {
     bytesResult.clear();
     if(protocol == ModbusProtocol::ASCII) {
         bytesResult.append("ASCII: ");
-        for(quint8 it : outputData) {
+        for(char it : outputData) {
             // handle the whitechars correctly
-            switch(it) {
+            switch(uchar(it)) {
             case 13:
                 bytesResult.append("CR");
                 break;
@@ -220,7 +220,7 @@ QByteArray MainWindow::prepareData(bool *isOk) {
                 bytesResult.append("LF");
                 break;
             default:
-                bytesResult.append((unsigned char) it);
+                bytesResult.append(static_cast<unsigned char>(it));
             }
             bytesResult.append(",");
         }
@@ -240,9 +240,9 @@ void MainWindow::sendDataToPort(const QByteArray &data)
         // do the port setup according to user setup
         port.setPort(QSerialPortInfo(ui->cbPort->currentData().toString()));
         port.setBaudRate(ui->cbPortSpeed->currentData().toInt());
-        port.setParity((QSerialPort::Parity) ui->cbParity->currentData().toInt());
-        port.setStopBits((QSerialPort::StopBits) ui->cbStopBit->currentData().toInt());
-        port.setDataBits((QSerialPort::DataBits) ui->cbDataBit->currentData().toInt());
+        port.setParity(static_cast<QSerialPort::Parity>(ui->cbParity->currentData().toInt()));
+        port.setStopBits(static_cast<QSerialPort::StopBits>(ui->cbStopBit->currentData().toInt()));
+        port.setDataBits(static_cast<QSerialPort::DataBits>(ui->cbDataBit->currentData().toInt()));
 
         // show the settings in the log
         info(tr("Port: %1: %2,%3,%4,%5")
@@ -284,8 +284,8 @@ void MainWindow::on_serialPortReadyRead()
 
     QString num;
     QString buff;
-    for(unsigned char it : readBuffer) {
-        num = QString::number(it, 16).toUpper().rightJustified(2, '0');
+    for(char it : readBuffer) {
+        num = QString::number(uchar(it), 16).toUpper().rightJustified(2, '0');
         ui->teOutput->appendPlainText(num);
         buff.append(num);
         buff.append(" ");
@@ -303,16 +303,20 @@ void MainWindow::on_serialPortError(QSerialPort::SerialPortError err)
     info(tr("Při přenosu dat došlo k chybě č. %1").arg(err));
     QString errMsg;
     switch(err) {
-        case QSerialPort::DeviceNotFoundError: errMsg = tr("Device not found error"); break;
-        case QSerialPort::PermissionError: errMsg = tr("An error occurred while attempting to open an already opened device by another process or a user not having enough permission and credentials to open."); break;
-        case QSerialPort::OpenError: errMsg = tr("An error occurred while attempting to open an already opened device in this object."); break;
-        case QSerialPort::NotOpenError: errMsg = tr("This error occurs when an operation is executed that can only be successfully performed if the device is open."); break;
-        case QSerialPort::WriteError: errMsg = tr("An I/O error occurred while writing the data."); break;
-        case QSerialPort::ReadError: errMsg = tr("An I/O error occurred while reading the data."); break;
-        case QSerialPort::ResourceError: errMsg = tr("An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system."); break;
-        case QSerialPort::UnsupportedOperationError: errMsg = tr("The requested device operation is not supported or prohibited by the running operating system."); break;
-        case QSerialPort::TimeoutError: errMsg = tr("A timeout error occurred."); break;
-        case QSerialPort::UnknownError: errMsg = tr("An unidentified error occurred."); break;
+    case QSerialPort::DeviceNotFoundError: errMsg = tr("Device not found error"); break;
+    case QSerialPort::PermissionError: errMsg = tr("An error occurred while attempting to open an already opened device by another process or a user not having enough permission and credentials to open."); break;
+    case QSerialPort::OpenError: errMsg = tr("An error occurred while attempting to open an already opened device in this object."); break;
+    case QSerialPort::NotOpenError: errMsg = tr("This error occurs when an operation is executed that can only be successfully performed if the device is open."); break;
+    case QSerialPort::WriteError: errMsg = tr("An I/O error occurred while writing the data."); break;
+    case QSerialPort::ReadError: errMsg = tr("An I/O error occurred while reading the data."); break;
+    case QSerialPort::ResourceError: errMsg = tr("An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system."); break;
+    case QSerialPort::UnsupportedOperationError: errMsg = tr("The requested device operation is not supported or prohibited by the running operating system."); break;
+    case QSerialPort::TimeoutError: errMsg = tr("A timeout error occurred."); break;
+    case QSerialPort::UnknownError: errMsg = tr("An unidentified error occurred."); break;
+    case QSerialPort::NoError: break;
+    case QSerialPort::ParityError: errMsg = tr("Parity error."); break;
+    case QSerialPort::FramingError: errMsg = tr("Framing error"); break;
+    case QSerialPort::BreakConditionError: errMsg = tr("Break condition error"); break;
     }
     QMessageBox::critical(this,
                           tr("Error"),
@@ -342,7 +346,7 @@ void MainWindow::on_action_about_triggered()
     QMessageBox::information(this,
                              tr("About"),
                              QString("%1\nQt Version: %2")
-                                .arg(licence)
-                                .arg(QT_VERSION_STR),
+                             .arg(licence)
+                             .arg(QT_VERSION_STR),
                              QMessageBox::Close);
 }
