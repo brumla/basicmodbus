@@ -15,4 +15,5 @@ CRC is calculated automatically, the RTU transfer mode is currently supported. A
 # Licence
 This tool is licenced under LPGPL 3 with one exception---the code contains the CRC calculation from the document http://www.delta.com.tw/product/em/drive/ac_motor/download/manual/DELTA_IA-MDS_VFD-EL_UM_EN_20140522.pdf, the licence of the code is unknown. 
 
-**If you are author of this code, please contact me, if the licence is not compatible with the LPGPL3!**
+**If you are author of this code, please contact me, if the licence is not compatible with the LGPL3!**
+
