@@ -1,3 +1,6 @@
+# Qt 6 compatibility
+**Warning!** This project is not Qt6 compatible as the current version of Qt 6 (Dec 2020) does not contain the *serialbus* module!
+
 # Basic MODBUS communication tool
 This is simple tool used for writting and reading data connected via MODBUS to local COMx: port. The usage is pretty simple:
 
