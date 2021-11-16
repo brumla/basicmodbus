@@ -20,6 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QAction>
 #include <QMainWindow>
 #include <QSerialPort>
 #include <QSerialPortInfo>
@@ -58,6 +59,8 @@ private slots:
     ///
     void on_action_about_triggered();
 
+    void on_cbPort_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
 
@@ -66,7 +69,8 @@ private:
 
     // buffer for incoming data
     QByteArray readBuffer;
-
+    QAction *actSendData;
+    QAction *closePort;
     ///
     /// \brief Initialize list of ports and all the parameters in comboboxes
     ///

@@ -24,8 +24,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QWidgetData>
-#include <QObjectUserData>
+//#include <QObjectUserData>
 #include <QThread>
+#include <QAction>
+#include <QFile>
+#include <QChar>
 
 #include <QDebug>
 
@@ -41,13 +44,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->teLog->setMaximumBlockCount(1024);
 
-    info(tr("Port defaults OK"));
-
     connect(&port, SIGNAL(readyRead()), this, SLOT(on_serialPortReadyRead()));
     connect(&port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(on_serialPortError(QSerialPort::SerialPortError)));
 
-    QAction *actSendData = ui->mainToolBar->addAction(tr("Send data"));
-    QAction *closePort = ui->mainToolBar->addAction(tr("Close port"));
+    actSendData = ui->mainToolBar->addAction(tr("Send data"));
+    closePort = ui->mainToolBar->addAction(tr("Close port"));
+
+    actSendData->setEnabled(false);
+    //closePort->setEnabled(false);
 
     connect(closePort, &QAction::triggered, [=]() {
         if(port.isOpen()) {
@@ -87,6 +91,9 @@ void MainWindow::initializePort()
      * and store new, the enums from Qt are used
      */
     ui->cbPort->clear();
+    bool hasPorts = false;
+    ui->comboBox->setEnabled(true);
+
     for(auto serialPort: QSerialPortInfo::availablePorts()) {
         ui->cbPort->addItem(tr("%1 (%2 %3 %4)")
                             .arg(serialPort.portName())
@@ -95,6 +102,16 @@ void MainWindow::initializePort()
                             .arg(serialPort.productIdentifier())
                             ,
                             serialPort.portName());
+        hasPorts = true;
+    }
+
+    if(!hasPorts) {
+        info(tr("No ports available"));
+        ui->cbPortSpeed->setEnabled(false);
+        ui->cbParity->setEnabled(false);
+        ui->cbDataBit->setEnabled(false);
+        ui->cbStopBit->setEnabled(false);
+        ui->comboBox->setEnabled(false);
     }
 
     ui->cbPortSpeed->clear();
@@ -132,8 +149,6 @@ void MainWindow::initializePort()
     ui->cbStopBit->addItem(tr("2 TwoStop"), QSerialPort::TwoStop);
 
     ui->cbStopBit->setCurrentIndex(2);
-
-    ui->comboBox->setEnabled(true);
 
     statusBar()->showMessage(tr("Application initialized"), 5000);
 }
@@ -210,7 +225,7 @@ QByteArray MainWindow::prepareData(bool *isOk) {
     bytesResult.clear();
     if(protocol == ModbusProtocol::ASCII) {
         bytesResult.append("ASCII: ");
-        for(char it : outputData) {
+        for(unsigned char it : outputData) {
             // handle the whitechars correctly
             switch(uchar(it)) {
             case 13:
@@ -220,7 +235,7 @@ QByteArray MainWindow::prepareData(bool *isOk) {
                 bytesResult.append("LF");
                 break;
             default:
-                bytesResult.append(static_cast<unsigned char>(it));
+                bytesResult.append(QChar(it));
             }
             bytesResult.append(",");
         }
@@ -314,9 +329,10 @@ void MainWindow::on_serialPortError(QSerialPort::SerialPortError err)
     case QSerialPort::TimeoutError: errMsg = tr("A timeout error occurred."); break;
     case QSerialPort::UnknownError: errMsg = tr("An unidentified error occurred."); break;
     case QSerialPort::NoError: break;
-    case QSerialPort::ParityError: errMsg = tr("Parity error."); break;
-    case QSerialPort::FramingError: errMsg = tr("Framing error"); break;
-    case QSerialPort::BreakConditionError: errMsg = tr("Break condition error"); break;
+        //    case QSerialPort::ParityError: errMsg = tr("Parity error."); break;
+        //    case QSerialPort::FramingError: errMsg = tr("Framing error"); break;
+        //    case QSerialPort::BreakConditionError: errMsg = tr("Break condition error"); break;
+    default: errMsg = tr("Unknown error");
     }
     QMessageBox::critical(this,
                           tr("Error"),
@@ -339,7 +355,7 @@ void MainWindow::on_action_about_triggered()
         licence = QString(f.readAll());
     }
     else {
-        licence = tr("Base MODBUS communication tool\nCopyright (C) 2017 Martin Zúber.\nLicence: LGPL3");
+        licence = tr("Base MODBUS communication tool\nCopyright (C) 2017-2021 Martin Zúber.\nLicence: LGPL3");
     }
     f.close();
 
@@ -350,3 +366,18 @@ void MainWindow::on_action_about_triggered()
                              .arg(QT_VERSION_STR),
                              QMessageBox::Close);
 }
+
+void MainWindow::on_cbPort_currentIndexChanged(int index)
+{
+    actSendData->setEnabled(false);
+
+    if(index >= 0) {
+        QString portNumber = ui->cbPort->currentData().toString();
+        qDebug() << "Selected port name: " << portNumber;
+
+        if(portNumber.length() > 0) {
+            actSendData->setEnabled(true);
+        }
+    }
+}
+

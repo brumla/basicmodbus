@@ -22,6 +22,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include "common_utils.h"
 
 #include <QDebug>
+#include <QString>
+#include <QRegularExpression>
 
 ModbusDataFormatter::ModbusDataFormatter(ModbusProtocol protocol) :
     m_isValid(false),
@@ -48,7 +50,7 @@ ModbusDataError ModbusDataFormatter::setOutputData(const QString &address, const
     }
 
     // unpack the input data
-    QStringList bytes = inputData.trimmed().split(QRegExp("[\n\r\t]+"), QString::SkipEmptyParts);
+    QStringList bytes = inputData.trimmed().split(QRegularExpression("[\n\r\t]+"), Qt::SkipEmptyParts);
     qDebug() << "Bytes: " << bytes.size();
     if(bytes.size() % 2 != 0) {
         // only even count is allowed
