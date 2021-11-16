@@ -72,7 +72,7 @@
             </font>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data se zadávají jako byte v hexa (0A, 5F) oddělené enterem. Pro režim čtení se zadávají pouze dva byte (první HIGH, druhý LOW) s očekávaným počtem přijatých byte např.:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;00&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;02&lt;/span&gt;&lt;/p&gt;&lt;p&gt;pro přijeté 2 byte. Maximální počet byte je 20 slov, tj. 40 byte, v režimu zápisu na zařízení.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter the data as hex number (0A, 5F) separated by Enter. Enter only first two bytes (first=HIGH, second=LOW) and number of the bytes expected when receiving data, for example:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;00&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;02&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The maximal number of data is 20 words, i.e. 40 bytes when writing to the device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="placeholderText">
             <string>See the tooltip for help</string>
