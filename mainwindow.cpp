@@ -93,7 +93,7 @@ void MainWindow::initializePort()
     bool hasPorts = false;
     ui->comboBox->setEnabled(true);
 
-    for(auto serialPort: QSerialPortInfo::availablePorts()) {
+    for(auto& serialPort: QSerialPortInfo::availablePorts()) {
         ui->cbPort->addItem(tr("%1 (%2 %3 %4)")
                             .arg(serialPort.portName())
                             .arg(serialPort.description())
