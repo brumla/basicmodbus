@@ -43,8 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->teLog->setMaximumBlockCount(1024);
 
-    connect(&port, SIGNAL(readyRead()), this, SLOT(on_serialPortReadyRead()));
-    connect(&port, SIGNAL(errorOccurred(QSerialPort::SerialPortError)), this, SLOT(on_serialPortError(QSerialPort::SerialPortError)));
+    connect(&port, &QSerialPort::readyRead, this, &MainWindow::on_serialPortReadyRead);
+    connect(&port, &QSerialPort::errorOccurred, this, &MainWindow::on_serialPortError);
 
     actSendData = ui->mainToolBar->addAction(tr("Send data"));
     closePort = ui->mainToolBar->addAction(tr("Close port"));
