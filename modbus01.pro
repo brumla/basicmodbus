@@ -55,3 +55,5 @@ FORMS += mainwindow.ui
 
 RESOURCES += \
     licence.qrc
+
+TRANSLATIONS = modbus01_cz.ts
