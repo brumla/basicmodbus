@@ -31,7 +31,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 #include <QDebug>
 
-#include "modbus_utils.h"
 #include "modbusdataformatter.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -284,7 +283,7 @@ void MainWindow::sendDataToPort(const QByteArray &data)
 
         // write data to the port
         info(tr("Writing data to the selected port..."));
-        port.write(data.data(), data.count());
+        port.write(data.data(), data.size());
         info(tr("Data sent."));
         statusBar()->showMessage(tr("Data were sent, waiting for response (if any)..."), 5000);
     }

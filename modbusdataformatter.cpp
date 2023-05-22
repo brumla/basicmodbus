@@ -83,7 +83,7 @@ QByteArray ModbusDataFormatter::calculateOutputData()
             output.append(it);
         }
 
-        m_crc = crc_chk((unsigned char *) output.data(), output.count());
+        m_crc = crc_chk((unsigned char *) output.data(), output.size());
         output.append(m_crc & 0xFF);
         output.append(m_crc >> 8);
 
