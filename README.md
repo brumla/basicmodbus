@@ -1,3 +1,4 @@
+May 2023: Upgraded to Qt 6.5
 November 2021: Project moved to Qt 6.2 and it is no longer compatible with Qt 5.x.
 
 # Basic MODBUS communication tool
