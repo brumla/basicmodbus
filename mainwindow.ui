@@ -39,7 +39,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0" alignment="Qt::AlignTop">
+         <item row="3" column="0" alignment="Qt::AlignmentFlag::AlignTop">
           <widget class="QLabel" name="label_5">
            <property name="text">
             <string>Data separated by new line:</string>
@@ -50,7 +50,7 @@
           <widget class="QLineEdit" name="leAddress1">
            <property name="font">
             <font>
-             <family>Courier</family>
+             <family>Microsoft Sans Serif</family>
             </font>
            </property>
            <property name="inputMask">
@@ -68,7 +68,7 @@
           <widget class="QPlainTextEdit" name="teData">
            <property name="font">
             <font>
-             <family>Courier</family>
+             <family>Microsoft Sans Serif</family>
             </font>
            </property>
            <property name="toolTip">
@@ -90,7 +90,7 @@
           <widget class="QLineEdit" name="leStartAddress">
            <property name="font">
             <font>
-             <family>Courier</family>
+             <family>Microsoft Sans Serif</family>
             </font>
            </property>
            <property name="maxLength">
@@ -112,7 +112,7 @@
           <widget class="QLineEdit" name="leFunction">
            <property name="font">
             <font>
-             <family>Courier</family>
+             <family>Microsoft Sans Serif</family>
             </font>
            </property>
            <property name="maxLength">
@@ -137,7 +137,7 @@
            </property>
            <property name="font">
             <font>
-             <family>Courier</family>
+             <family>Microsoft Sans Serif</family>
             </font>
            </property>
            <property name="text">
@@ -154,7 +154,7 @@
          <item row="5" column="0" colspan="2">
           <spacer name="verticalSpacer">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Orientation::Vertical</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -177,7 +177,7 @@
           <widget class="QPlainTextEdit" name="teOutput">
            <property name="font">
             <font>
-             <family>Courier</family>
+             <family>Microsoft Sans Serif</family>
             </font>
            </property>
            <property name="readOnly">
@@ -185,7 +185,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0" alignment="Qt::AlignTop">
+         <item row="0" column="0" alignment="Qt::AlignmentFlag::AlignTop">
           <widget class="QLabel" name="label_7">
            <property name="text">
             <string>Received data:</string>
@@ -322,7 +322,7 @@
      <widget class="QPlainTextEdit" name="teLog">
       <property name="font">
        <font>
-        <family>Courier</family>
+        <family>Microsoft Sans Serif</family>
        </font>
       </property>
       <property name="readOnly">
@@ -341,7 +341,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

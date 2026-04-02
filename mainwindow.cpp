@@ -38,6 +38,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    actSendData = ui->mainToolBar->addAction(tr("Send data"));
+    closePort = ui->mainToolBar->addAction(tr("Close port"));
+
     initializePort();
 
     ui->teLog->setMaximumBlockCount(1024);
@@ -45,8 +49,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&port, &QSerialPort::readyRead, this, &MainWindow::on_serialPortReadyRead);
     connect(&port, &QSerialPort::errorOccurred, this, &MainWindow::on_serialPortError);
 
-    actSendData = ui->mainToolBar->addAction(tr("Send data"));
-    closePort = ui->mainToolBar->addAction(tr("Close port"));
 
     actSendData->setEnabled(false);
     //closePort->setEnabled(false);
@@ -367,9 +369,12 @@ void MainWindow::on_action_about_triggered()
 
 void MainWindow::on_cbPort_currentIndexChanged(int index)
 {
+    qDebug() << "0";
     actSendData->setEnabled(false);
+    qDebug() << "1";
 
     if(index >= 0) {
+        qDebug() << "2";
         QString portNumber = ui->cbPort->currentData().toString();
         qDebug() << "Selected port name: " << portNumber;
 
@@ -378,4 +383,3 @@ void MainWindow::on_cbPort_currentIndexChanged(int index)
         }
     }
 }
-
