@@ -26,7 +26,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include <QRegularExpression>
 
 ModbusDataFormatter::ModbusDataFormatter(ModbusProtocol protocol) :
-    m_isValid(false),
     m_protocol(protocol)
 {
 }

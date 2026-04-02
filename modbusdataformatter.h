@@ -85,7 +85,6 @@ private:
     quint16                 m_startAddress;
     QByteArray              m_data;
     unsigned int            m_crc;
-    bool                    m_isValid;
     ModbusProtocol          m_protocol;
 };
 
