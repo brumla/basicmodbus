@@ -74,6 +74,9 @@ MainWindow::MainWindow(QWidget *parent) :
         qDebug() << "Sending data to selected port, data size=" << data.size();
         sendDataToPort(data);
     });
+
+    // force detection of the initial selected port
+    on_cbPort_currentIndexChanged(0);
 }
 
 MainWindow::~MainWindow()
@@ -362,13 +365,11 @@ void MainWindow::on_action_about_triggered()
 
 void MainWindow::on_cbPort_currentIndexChanged(int index)
 {
-    qDebug() << "0";
     actSendData->setEnabled(false);
-    qDebug() << "1";
 
     if(index >= 0) {
-        qDebug() << "2";
         QString portNumber = ui->cbPort->currentData().toString();
+        qDebug() << "Selected port number length: " << portNumber.length();
         qDebug() << "Selected port name: " << portNumber;
 
         if(portNumber.length() > 0) {
