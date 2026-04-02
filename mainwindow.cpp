@@ -94,7 +94,7 @@ void MainWindow::initializePort()
     bool hasPorts = false;
     ui->comboBox->setEnabled(true);
 
-    for(auto& serialPort: QSerialPortInfo::availablePorts()) {
+    for(auto& serialPort: static_cast<const QList<QSerialPortInfo>>(QSerialPortInfo::availablePorts())) {
         ui->cbPort->addItem(tr("%1 (%2 %3 %4)")
                             .arg(serialPort.portName())
                             .arg(serialPort.description())
@@ -215,7 +215,7 @@ QByteArray MainWindow::prepareData(bool *isOk) {
 
     // show the data output in console for RTU and ASCII as bytes
     QString bytesResult = tr("Bytes: ");
-    for(char it : outputData) {
+    for(char it : static_cast<const QByteArray>(outputData)) {
         bytesResult.append(QString::number(uchar(it), 16).rightJustified(2, '0'));
         bytesResult.append(" ");
     }
@@ -225,7 +225,7 @@ QByteArray MainWindow::prepareData(bool *isOk) {
     bytesResult.clear();
     if(protocol == ModbusProtocol::ASCII) {
         bytesResult.append("ASCII: ");
-        for(unsigned char it : outputData) {
+        for(unsigned char it : static_cast<const QByteArray>(outputData)) {
             // handle the whitechars correctly
             switch(uchar(it)) {
             case 13:
@@ -299,7 +299,7 @@ void MainWindow::on_serialPortReadyRead()
 
     QString num;
     QString buff;
-    for(char it : readBuffer) {
+    for(char it : static_cast<const QByteArray>(readBuffer)) {
         num = QString::number(uchar(it), 16).toUpper().rightJustified(2, '0');
         ui->teOutput->appendPlainText(num);
         buff.append(num);
