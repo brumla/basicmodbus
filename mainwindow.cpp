@@ -96,12 +96,8 @@ void MainWindow::initializePort()
 
     for(auto& serialPort: static_cast<const QList<QSerialPortInfo>>(QSerialPortInfo::availablePorts())) {
         ui->cbPort->addItem(tr("%1 (%2 %3 %4)")
-                            .arg(serialPort.portName())
-                            .arg(serialPort.description())
-                            .arg(serialPort.serialNumber())
-                            .arg(serialPort.productIdentifier())
-                            ,
-                            serialPort.portName());
+                            .arg(serialPort.portName(), serialPort.description(), serialPort.serialNumber())
+                            .arg(serialPort.productIdentifier()), serialPort.portName());
         hasPorts = true;
     }
 
@@ -156,8 +152,7 @@ void MainWindow::initializePort()
 void MainWindow::info(const QString &msg)
 {
     ui->teLog->appendPlainText(tr("%1: %2")
-                               .arg(QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm:ss"))
-                               .arg(msg)
+                               .arg(QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm:ss"), msg)
                                );
 }
 
@@ -361,9 +356,7 @@ void MainWindow::on_action_about_triggered()
 
     QMessageBox::information(this,
                              tr("About"),
-                             QString("%1\nQt Version: %2")
-                             .arg(licence)
-                             .arg(QT_VERSION_STR),
+                             tr("%1\nQt Version: %2").arg(licence, QT_VERSION_STR),
                              QMessageBox::Close);
 }
 
