@@ -1,7 +1,3 @@
-Juni 2023: Works with Qt 6.5.1
-May 2023: Upgraded to Qt 6.5
-November 2021: Project moved to Qt 6.2 and it is no longer compatible with Qt 5.x.
-
 # Basic MODBUS communication tool
 This is simple tool used for writting and reading data connected via MODBUS to local COMx: port. The usage is pretty simple:
 
@@ -15,6 +11,9 @@ This is simple tool used for writting and reading data connected via MODBUS to l
 1. Press _Send data_ button (in toolbar)
 
 CRC is calculated automatically, the RTU transfer mode is currently supported. ASCII transfer mode is planed for the future.
+
+# Compatibility
+April 2026: Qt 6.11 compatible
 
 # Licence
 This tool is licenced under LPGPL 3 with one exception---the code contains the CRC calculation from the document http://www.delta.com.tw/product/em/drive/ac_motor/download/manual/DELTA_IA-MDS_VFD-EL_UM_EN_20140522.pdf, the licence of the code is unknown. 
